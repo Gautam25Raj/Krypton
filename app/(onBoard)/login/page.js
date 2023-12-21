@@ -36,13 +36,17 @@ export default function Login() {
   }, [isConnected]);
 
   // Add Connect functionalities for all the wallets with Dataverse OS
-  const connectWallet = async (walletType, index) => {
-    const dataverseConnector = new DataverseConnector();
+  const connectWallet = async () => {
     try {
+      console.log("Inside connectWallet");
+      const dataverseConnector = new DataverseConnector();
+
+      console.log("After creating dataverseConnector");
       const appId = process.env.NEXT_PUBLIC_DATAVERSE_APP_ID;
       const res = await dataverseConnector.connectWallet({
-        wallet: walletType,
+        wallet: WALLET.METAMASK,
       });
+      console.log("After connectWallet");
       const pkh = await dataverseConnector.runOS({
         method: SYSTEM_CALL.createCapability,
         params: {
@@ -50,11 +54,13 @@ export default function Login() {
           resource: RESOURCE.CERAMIC,
         },
       });
-      console.log(pkh);
+      console.log("After PKH");
+      console.log("PKH: " + pkh);
       connect({
-        connector: connectors[index],
+        connector: connectors[0],
         //Metamask
       });
+      console.log("After connect");
 
       setWallet(res.wallet);
       return res.address;
@@ -113,7 +119,7 @@ export default function Login() {
               variant="outlined"
               className="flex items-center gap-3 capitalize text-lg font-uni"
               onClick={async () => {
-                connectWallet(WALLET.METAMASK, 0);
+                connectWallet();
                 // connect({
                 //   connector: connectors[0],
                 //   //Metamask
